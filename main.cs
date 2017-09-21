@@ -15,6 +15,9 @@ namespace androgee_csharp
             _client = new DiscordSocketClient();
 
             _client.MessageReceived += MessageReceived;
+            // _client.UserJoined += UserJoined;
+            // _client.LeftGuild += UserLeft;
+            // _client.UserBanned += UserBanned;
 
             string token = System.Environment.GetEnvironmentVariable("NUEVO");
             await _client.LoginAsync(TokenType.Bot, token);
