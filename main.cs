@@ -51,41 +51,34 @@ namespace androgee_csharp
 
         private async Task MessageReceived(SocketMessage message)
         {
-            if (message.Content.Contains("~help"))
+            switch (message.Content)
             {
-                await message.Channel.SendMessageAsync("Not Implement Yet.");
-            }
-            else if (message.Content.Contains("~fortune"))
-            {
-                await message.Channel.SendMessageAsync("Eat Shit.");
-            }
-            else if (message.Content.Contains("~catpic"))
-            {
+                case "~help":
+                    await message.Channel.SendMessageAsync("Not Implement Yet.");
+                    break;
+                case "~fortune":
+                    await message.Channel.SendMessageAsync("Eat Shit.");
+                    break;
+                case "~catpic":
                 await GetCatPic();
                 await message.Channel.SendMessageAsync(_httpResponse);
-                
-            }
-            else if (message.Content.Contains("~catgif"))
-            {
+                    break;
+                case "~catgif":
                 await GetCatGif();
                 await message.Channel.SendMessageAsync(_httpResponse);
-            }
-            else if (message.Content.Contains("~chucknorris"))
-            {
+                    break;
+                case "~chucknorris":
                 await GetChuckNorrisQuote();
                 await message.Channel.SendMessageAsync(_httpResponse);
+                    break;
+                    
             }
         }
         private async Task GetChuckNorrisQuote()
         {
             var client = new HttpClient();
-
-            var serializer = new DataContractJsonSerializer(typeof(List<repo>));
             var stringTask = client.GetStringAsync("http://api.icndb.com/jokes/random?exclude=[explicit]");
-
             var jsonString = await stringTask;
-
-            // var o = JObject.Parse(jsonString);
 
             dynamic jsonJson = JObject.Parse(jsonString);
             _httpResponse =jsonJson.value.joke;
