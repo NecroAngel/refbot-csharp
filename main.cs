@@ -1,8 +1,12 @@
 ﻿using Discord;
+using System.IO;
 using System.Net.Http;
 using Discord.WebSocket;
 using System.Threading.Tasks;
 using Newtonsoft.Json.Linq;
+using System.Collections.Generic;
+using System.Linq;
+using System;
 
 namespace androgee_csharp
 {
@@ -15,6 +19,11 @@ namespace androgee_csharp
 
         private async Task MainAsync()
 		{
+            Random rnd = new Random();
+            JObject json = JObject.Parse(File.ReadAllText(@"blob.json"));
+            var games = json.SelectToken("games");
+            var length = games.Children().Count() - 1;
+            
             _client = new DiscordSocketClient();
 
             _client.MessageReceived += MessageReceived;
@@ -25,14 +34,13 @@ namespace androgee_csharp
             string token = System.Environment.GetEnvironmentVariable("NUEVO");
             await _client.LoginAsync(TokenType.Bot, token);
             await _client.StartAsync();
-            await _client.SetGameAsync("Duke3D");
+            await _client.SetGameAsync(games[rnd.Next(0, length)].ToString());
 
             // Block this task until the program is closed.
             await Task.Delay(-1);
 		}
         private async Task Test()
         {
-            
         }
 
         private async Task UserJoined(SocketGuildUser user) 
@@ -53,10 +61,10 @@ namespace androgee_csharp
             switch (message.Content)
             {
                 case "~help":
-                    await message.Channel.SendMessageAsync("Not Implement Yet.");
+                    await message.Channel.SendMessageAsync("Get fucked");
                     break;
                 case "~fortune":
-                    await message.Channel.SendMessageAsync("Eat Shit.");
+                    await message.Channel.SendMessageAsync("I've had it with you " + message.Author.Username);
                     break;
                 case "~catpic":
                 await GetCatPic();
