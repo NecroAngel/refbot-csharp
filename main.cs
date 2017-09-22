@@ -23,7 +23,7 @@ namespace androgee_csharp
             JObject json = JObject.Parse(File.ReadAllText(@"blob.json"));
             var games = json.SelectToken("games");
             var length = games.Children().Count() - 1;
-            
+
             _client = new DiscordSocketClient();
 
             _client.MessageReceived += MessageReceived;
@@ -77,6 +77,12 @@ namespace androgee_csharp
                 case "~chucknorris":
                 await GetChuckNorrisQuote();
                 await message.Channel.SendMessageAsync(_httpResponse);
+                    break;
+                case "~commands":
+                    await message.Channel.SendMessageAsync("Get rekt");
+                    break;
+                case "~ping":
+                    await message.Channel.SendMessageAsync("C'mon, I'm not a baby");
                     break;
                     
             }
