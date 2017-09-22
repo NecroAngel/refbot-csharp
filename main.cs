@@ -2,20 +2,18 @@
 using System.Net.Http;
 using Discord.WebSocket;
 using System.Threading.Tasks;
-using System.Runtime.Serialization.Json;
-using System.Collections.Generic;
 using Newtonsoft.Json.Linq;
 
 namespace androgee_csharp
 {
-    class Program
+    internal class Program
     {
         private DiscordSocketClient _client;
         private string _httpResponse;
-		public static void Main(string[] args)
+		public static void Main()
 			=> new Program().MainAsync().GetAwaiter().GetResult();
 
-		public async Task MainAsync()
+        private async Task MainAsync()
 		{
             _client = new DiscordSocketClient();
 
@@ -27,13 +25,14 @@ namespace androgee_csharp
             string token = System.Environment.GetEnvironmentVariable("NUEVO");
             await _client.LoginAsync(TokenType.Bot, token);
             await _client.StartAsync();
-            await _client.SetGameAsync("WarThunder");
+            await _client.SetGameAsync("Duke3D");
 
             // Block this task until the program is closed.
             await Task.Delay(-1);
 		}
         private async Task Test()
         {
+            
         }
 
         private async Task UserJoined(SocketGuildUser user) 
