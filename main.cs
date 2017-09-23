@@ -7,6 +7,7 @@ using Newtonsoft.Json.Linq;
 using System.Collections.Generic;
 using System.Linq;
 using System;
+using System.Diagnostics;
 
 namespace androgee_csharp
 {
@@ -58,13 +59,16 @@ namespace androgee_csharp
 
         private async Task MessageReceived(SocketMessage message)
         {
+            string output;
+
             switch (message.Content)
             {
                 case "~help":
                     await message.Channel.SendMessageAsync("Get fucked");
                     break;
                 case "~fortune":
-                    await message.Channel.SendMessageAsync("I've had it with you " + message.Author.Username);
+                    output = "fortune -s | cowsay".Bash();
+                    await message.Channel.SendMessageAsync("``" + output + "``");
                     break;
                 case "~catpic":
                 await GetCatPic();
@@ -83,6 +87,14 @@ namespace androgee_csharp
                     break;
                 case "~ping":
                     await message.Channel.SendMessageAsync("C'mon, I'm not a baby");
+                    break;
+                case "~ghostbusters":
+                    output = "cowsay -f ghostbusters Who you Gonna Call".Bash();
+                    await message.Channel.SendMessageAsync("``" + output + "``");
+                    break;
+                case "~moo":
+                    output = "apt-get moo".Bash();
+                    await message.Channel.SendMessageAsync("``" + output + "``");
                     break;
                     
             }
@@ -111,6 +123,29 @@ namespace androgee_csharp
 
             var msg = await stringTask;
             _httpResponse = msg.RequestMessage.RequestUri.AbsoluteUri;
+        }
+    }
+        public static class ShellHelper
+    {
+        public static string Bash(this string cmd)
+        {
+            var escapedArgs = cmd.Replace("\"", "\\\"");
+            
+            var process = new Process()
+            {
+                StartInfo = new ProcessStartInfo
+                {
+                    FileName = "/bin/bash",
+                    Arguments = $"-c \"{escapedArgs}\"",
+                    RedirectStandardOutput = true,
+                    UseShellExecute = false,
+                    CreateNoWindow = true,
+                }
+            };
+            process.Start();
+            string result = process.StandardOutput.ReadToEnd();
+            process.WaitForExit();
+            return result;
         }
     }
 }
