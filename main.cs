@@ -7,9 +7,8 @@ using Newtonsoft.Json.Linq;
 using System.Collections.Generic;
 using System.Linq;
 using System;
-using System.Diagnostics;
 
-namespace androgee_csharp
+namespace androgee
 {
     internal class Program
     {
@@ -21,7 +20,7 @@ namespace androgee_csharp
         private async Task MainAsync()
 		{
             Random rnd = new Random();
-            JObject json = JObject.Parse(File.ReadAllText(@"blob.json"));
+            var json = JObject.Parse(File.ReadAllText(@"blob.json"));
             var games = json.SelectToken("games");
             var length = games.Children().Count() - 1;
 
@@ -63,11 +62,11 @@ namespace androgee_csharp
 
             switch (message.Content)
             {
-                case "~help":
+                case ("~help"):
                     await message.Channel.SendMessageAsync("Get fucked");
                     break;
                 case "~fortune":
-                    output = "fortune -s | cowsay".Bash();
+                    output = "fortune -s | cowsay".ToBash();
                     await message.Channel.SendMessageAsync("``" + output + "``");
                     break;
                 case "~catpic":
@@ -89,14 +88,38 @@ namespace androgee_csharp
                     await message.Channel.SendMessageAsync("C'mon, I'm not a baby");
                     break;
                 case "~ghostbusters":
-                    output = "cowsay -f ghostbusters Who you Gonna Call".Bash();
+                    output = "cowsay -f ghostbusters Who you Gonna Call".ToBash();
                     await message.Channel.SendMessageAsync("``" + output + "``");
                     break;
                 case "~moo":
-                    output = "apt-get moo".Bash();
+                    output = "apt-get moo".ToBash();
                     await message.Channel.SendMessageAsync("``" + output + "``");
                     break;
-                    
+                case "~dragon":
+                break;
+                case "~tux":
+                break;
+                case "~penguin":
+                break;
+                default:
+                    if (message.Content.Contains("~test"))
+                    {
+                        var distro = message.Content.Remove(0, 6);
+                        var guild = _client.GetGuild(183740337976508416);
+                        var user = guild.GetUser(message.Author.Id);
+                        var roles = guild.Roles;
+
+                        JObject json = JObject.Parse(File.ReadAllText(@"blob.json"));
+                        var protectedRoles = json.SelectToken("protectedRoles");
+                        var test = protectedRoles.Children().Contains(distro);
+
+                        if (test == false)
+                        {
+                            var myRole = roles.Single(r => r.Name == distro);
+                            await user.AddRoleAsync(myRole);
+                        }
+                    }
+                break;
             }
         }
         private async Task GetChuckNorrisQuote()
@@ -123,29 +146,6 @@ namespace androgee_csharp
 
             var msg = await stringTask;
             _httpResponse = msg.RequestMessage.RequestUri.AbsoluteUri;
-        }
-    }
-        public static class ShellHelper
-    {
-        public static string Bash(this string cmd)
-        {
-            var escapedArgs = cmd.Replace("\"", "\\\"");
-            
-            var process = new Process()
-            {
-                StartInfo = new ProcessStartInfo
-                {
-                    FileName = "/bin/bash",
-                    Arguments = $"-c \"{escapedArgs}\"",
-                    RedirectStandardOutput = true,
-                    UseShellExecute = false,
-                    CreateNoWindow = true,
-                }
-            };
-            process.Start();
-            string result = process.StandardOutput.ReadToEnd();
-            process.WaitForExit();
-            return result;
         }
     }
 }
